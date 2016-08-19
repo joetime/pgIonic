@@ -53,10 +53,9 @@ angular.module('starter.controllers', ['ngCordova'])
         log('deviceready');
         initMap();
         getPosition();
-        // center map on user
-        if (map) MapService.CenterMap(map, $scope.lat, $scope.lng)
 
-        //startWatch();
+        startWatch();
+
         try {
             $scope.$apply();
         } catch (err) {
@@ -71,9 +70,32 @@ angular.module('starter.controllers', ['ngCordova'])
             function(position) {
                 log('GetCurrentPosition success')
                 updateLocation(position);
+                try {
+                    $scope.$apply();
+                } catch (err) {
+                    log('$apply error', err)
+                }
             },
             function(err) {
                 log('GetCurrentPosition error ' + rep++, err);
+                if (rep < 10) getPosition(); // try again
+
+            },
+            posOptions
+        );
+    }
+
+    function startWatch() {
+        log('starting watch position...');
+        GeolocationService.WatchPosition(
+            function(position) {
+                log('WatchPosition update')
+                updateLocation(position);
+                // center map on user
+                if (map) MapService.CenterMap(map, $scope.lat, $scope.lng)
+            },
+            function(err) {
+                log('WatchPosition error ' + rep++, err);
                 if (rep < 10) getPosition(); // try again
                 try {
                     $scope.$apply();
@@ -82,7 +104,7 @@ angular.module('starter.controllers', ['ngCordova'])
                 }
             },
             posOptions
-        )
+        );
     }
 
     function updateLocation(position) {
