@@ -42,7 +42,7 @@ angular.module('starter.controllers', ['ngCordova'])
     // get position
     var posOptions = {
         timeout: 10000,
-        enableHighAccuracy: false,
+        enableHighAccuracy: true,
         maximumAge: 5000
     };
     var defaultCenter = {
@@ -57,6 +57,7 @@ angular.module('starter.controllers', ['ngCordova'])
         else
             $scope.logs.push(msg);
     }
+
 
     document.addEventListener('deviceready', function() {
         log('deviceready');
