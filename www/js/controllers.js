@@ -66,22 +66,9 @@ angular.module('starter.controllers', ['ngCordova'])
 
     // get position
     var posOptions = {
-        //timeout: 10000,
-        enableHighAccuracy: true,
+        timeout: 10000,
+        enableHighAccuracy: false,
         maximumAge: 5000
-    };
-    /*
-    $cordovaGeolocation
-        .getCurrentPosition(posOptions)
-        .then(function(position) {
-            updateLocation(position);
-        }, function(err) {
-            // error
-        });*/
-
-    var watchOptions = {
-        //timeout: 3000,
-        enableHighAccuracy: true // may cause errors if true
     };
 
     var watch = $cordovaGeolocation.watchPosition(posOptions);
