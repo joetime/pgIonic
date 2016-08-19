@@ -33,8 +33,10 @@
 
   <ion-content>
     <div id="floatme">
-      {{lat}}</br>
-      {{lng}}<br> {{lastUpdated | moment:"HH:mm:ss" }}
+      <button ng-click="refreshLocation()">refresh</button>
+      <br/> {{lat}}
+      <br/> {{lng}}
+      <br/> {{lastUpdated | moment:"HH:mm:ss" }}
     </div>
     <div id="log">
       <!--<span ng-if="!_showLog" ng-click="_showLog=true">{{_showLog || 'LOG'}}</span>-->

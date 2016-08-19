@@ -30,6 +30,15 @@ angular.module('starter.controllers', ['ngCordova'])
     $scope.lat = "?";
     $scope.lng = "?";
 
+    function tryScopeAppy() {
+        try {
+            $scope.$apply();
+        } catch (err) {
+            // nothing
+        }
+    }
+
+
     // get position
     var posOptions = {
         timeout: 10000,
@@ -64,22 +73,21 @@ angular.module('starter.controllers', ['ngCordova'])
     });
     var rep = 0;
 
+    $scope.refreshLocation = function() {
+        getPosition();
+    }
+
     function getPosition() {
         log('getting position...');
         GeolocationService.GetCurrentPosition(
             function(position) {
                 log('GetCurrentPosition success')
                 updateLocation(position);
-                try {
-                    $scope.$apply();
-                } catch (err) {
-                    log('$apply error', err)
-                }
             },
             function(err) {
-                log('GetCurrentPosition error ' + rep++, err);
-                if (rep < 10) getPosition(); // try again
-
+                log('GetCurrentPosition error ', err.msg);
+                tryScopeAppy();
+                //if (rep < 10) getPosition(); // try again
             },
             posOptions
         );
@@ -95,13 +103,8 @@ angular.module('starter.controllers', ['ngCordova'])
                 if (map) MapService.CenterMap(map, $scope.lat, $scope.lng)
             },
             function(err) {
-                log('WatchPosition error ' + rep++, err);
-                if (rep < 10) getPosition(); // try again
-                try {
-                    $scope.$apply();
-                } catch (err) {
-                    log('$apply error', err)
-                }
+                log('WatchPosition error ', err.msg);
+                tryScopeAppy();
             },
             posOptions
         );

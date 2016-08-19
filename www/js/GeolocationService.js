@@ -13,15 +13,9 @@ angular.module('starter').service('GeolocationService', ['$cordovaGeolocation', 
             // navigator preferred
             navigator.geolocation.getCurrentPosition(success, function(err) {
 
-                if (err.code == 1)
-                    console.warn('getCurrentPosition failed: permission denied.');
+                err.msg = getErrorMessage(err.code);
 
-                else if (err.code == 2)
-                    console.warn('getCurrentPosition failed: error retreving location.');
-
-                else if (err.code == 3)
-                    console.warn('getCurrentPosition failed: timeout occurred.');
-
+                console.warn(err.msg);
                 error(err);
 
             }, options);
@@ -32,12 +26,25 @@ angular.module('starter').service('GeolocationService', ['$cordovaGeolocation', 
                 .then(
                     null,
                     function(err) {
-                        if (err.code) console.log(err.code);
-                        console.log(err.message);
-                        if (error) error(err);
+                        err.msg = getErrorMessage(err.code);
+                        console.warn(err.msg);
+                        error(err);
                     },
                     success);
         }
+    }
+
+    function getErrorMessage(code) {
+        var msg = 'getCurrentPosition failed: '
+        if (code == 1)
+            return msg + 'permission denied.';
+        else if (code == 2)
+            return msg + 'location unavailable on this device.';
+
+        else if (code == 3)
+            return msg + 'timeout occurred.';
+        else
+            return msg + 'unknown reason, code=' + code;
     }
 
     function watchPosition(success, error, options) {
@@ -46,15 +53,8 @@ angular.module('starter').service('GeolocationService', ['$cordovaGeolocation', 
             // navigator preferred
             navigator.geolocation.watchPosition(success, function(err) {
 
-                if (err.code == 1)
-                    console.warn('getCurrentPosition failed: permission denied.');
-
-                else if (err.code == 2)
-                    console.warn('getCurrentPosition failed: error retreving location.');
-
-                else if (err.code == 3)
-                    console.warn('getCurrentPosition failed: timeout occurred.');
-
+                err.msg = getErrorMessage(err.code);
+                console.warn(err.msg);
                 error(err);
 
             }, options);
@@ -65,9 +65,9 @@ angular.module('starter').service('GeolocationService', ['$cordovaGeolocation', 
                 .then(
                     null,
                     function(err) {
-                        if (err.code) console.log(err.code);
-                        console.log(err.message);
-                        if (error) error(err);
+                        err.msg = getErrorMessage(err.code);
+                        console.warn(err.msg);
+                        error(err);
                     },
                     success);
         }
