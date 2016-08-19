@@ -30,7 +30,7 @@ angular.module('starter.controllers', ['ngCordova'])
     $scope.lat = "?";
     $scope.lng = "?";
 
-    function tryScopeAppy() {
+    function tryScopeApply() {
         try {
             $scope.$apply();
         } catch (err) {
@@ -62,15 +62,10 @@ angular.module('starter.controllers', ['ngCordova'])
     document.addEventListener('deviceready', function() {
         log('deviceready');
         initMap();
-        getPosition();
-
+        //getPosition();
         startWatch();
+        tryScopeApply();
 
-        try {
-            $scope.$apply();
-        } catch (err) {
-            log('$apply error', err)
-        }
     });
     var rep = 0;
 
@@ -84,10 +79,11 @@ angular.module('starter.controllers', ['ngCordova'])
             function(position) {
                 log('GetCurrentPosition success')
                 updateLocation(position);
+                tryScopeApply();
             },
             function(err) {
                 log('GetCurrentPosition error ', err.msg);
-                tryScopeAppy();
+                tryScopeApply();
                 //if (rep < 10) getPosition(); // try again
             },
             posOptions
@@ -102,10 +98,11 @@ angular.module('starter.controllers', ['ngCordova'])
                 updateLocation(position);
                 // center map on user
                 if (map) MapService.CenterMap(map, $scope.lat, $scope.lng)
+                tryScopeApply();
             },
             function(err) {
                 log('WatchPosition error ', err.msg);
-                tryScopeAppy();
+                tryScopeApply();
             },
             posOptions
         );
@@ -116,6 +113,7 @@ angular.module('starter.controllers', ['ngCordova'])
         $scope.lng = position.coords.longitude
         $scope.lastUpdated = new Date();
         log('lat lng ' + $scope.lat + ' ' + $scope.lng);
+        tryScopeApply();
 
     }
 
