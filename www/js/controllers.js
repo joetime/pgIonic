@@ -23,11 +23,23 @@ angular.module('starter.controllers', ['ngCordova'])
     $scope.chat = Chats.get($stateParams.chatId);
 })
 
-.controller('AccountCtrl', function($scope, $cordovaGeolocation, MapService) {
-    $scope.settings = {
-        enableFriends: true
-    };
+.controller('AccountCtrl', function($scope, GeolocationService, MapService) {
+
+    var map;
     $scope.logs = ['begin log'];
+    $scope.lat = "?";
+    $scope.lng = "?";
+
+    // get position
+    var posOptions = {
+        timeout: 10000,
+        enableHighAccuracy: false,
+        maximumAge: 5000
+    };
+    var defaultCenter = {
+        lat: 38.28669916469537,
+        lng: -76.58446155495623
+    }; // patterson park
 
     function log(msg, obj) {
         console.log(msg, obj);
@@ -36,50 +48,56 @@ angular.module('starter.controllers', ['ngCordova'])
         else
             $scope.logs.push(msg);
     }
-    var map;
 
-    $scope.lat = "?";
-    $scope.lng = "?";
-    log('lat lng ' + $scope.lat + ' ' + $scope.lng);
+    document.addEventListener('deviceready', function() {
+        log('deviceready');
+        initMap();
+        getPosition();
+        // center map on user
+        if (map) MapService.CenterMap(map, $scope.lat, $scope.lng)
 
+        //startWatch();
+        try {
+            $scope.$apply();
+        } catch (err) {
+            log('$apply error', err)
+        }
+    });
+    var rep = 0;
+
+    function getPosition() {
+        log('getting position...');
+        GeolocationService.GetCurrentPosition(
+            function(position) {
+                log('GetCurrentPosition success')
+                updateLocation(position);
+            },
+            function(err) {
+                log('GetCurrentPosition error ' + rep++, err);
+                if (rep < 10) getPosition(); // try again
+                try {
+                    $scope.$apply();
+                } catch (err) {
+                    log('$apply error', err)
+                }
+            },
+            posOptions
+        )
+    }
 
     function updateLocation(position) {
         $scope.lat = position.coords.latitude
         $scope.lng = position.coords.longitude
         $scope.lastUpdated = new Date();
         log('lat lng ' + $scope.lat + ' ' + $scope.lng);
-        if (map) MapService.CenterMap(map, $scope.lat, $scope.lng)
+
     }
 
     function initMap() {
-        //console.log('initMap()...')
+        log('initializing map');
         map = new google.maps.Map(document.getElementById('map'), {
-            center: {
-                lat: -34.397,
-                lng: 150.644
-            },
-            zoom: 20
+            center: defaultCenter,
+            zoom: 16
         });
-        //console.log(map);
     }
-    initMap();
-
-    // get position
-    var posOptions = {
-        timeout: 10000,
-        enableHighAccuracy: false,
-        maximumAge: 5000
-    };
-
-    var watch = $cordovaGeolocation.watchPosition(posOptions);
-    watch.then(
-        null,
-        function(err) {
-            // error
-            log('watch position error: ' + JSON.stringify(err));
-        },
-        function(position) {
-            log('position updated');
-            updateLocation(position)
-        });
 });
